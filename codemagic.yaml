@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 60
 
     environment:
-      node: 18
+      node: 20
       xcode: latest
 
     scripts:
@@ -36,7 +36,7 @@ workflows:
           archive \
           -archivePath build/App.xcarchive
 
-      - name: Create IPA
+      - name: Export IPA
         script: |
           mkdir -p build/ipa
 
@@ -53,8 +53,8 @@ workflows:
 
           xcodebuild -exportArchive \
           -archivePath build/App.xcarchive \
-          -exportOptionsPlist exportOptions.plist \
           -exportPath build/ipa \
+          -exportOptionsPlist exportOptions.plist \
           CODE_SIGNING_ALLOWED=NO \
           CODE_SIGNING_REQUIRED=NO
 
