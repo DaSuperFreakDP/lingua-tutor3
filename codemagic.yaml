@@ -23,15 +23,27 @@ workflows:
         script: |
           cd ios
           pod install
+          cd ..
 
-      - name: Build IPA
+      - name: Build archive (no signing)
         script: |
           xcodebuild \
           -workspace ios/*.xcworkspace \
           -scheme $(ls ios | grep xcodeproj | sed 's/.xcodeproj//') \
           -configuration Release \
           -sdk iphoneos \
-          -archivePath build/App.xcarchive archive
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO \
+          archive \
+          -archivePath build/App.xcarchive
+
+      - name: Export IPA
+        script: |
+          mkdir -p build/ipa
+          xcodebuild -exportArchive \
+          -archivePath build/App.xcarchive \
+          -exportPath build/ipa \
+          -exportOptionsPlist /dev/null
 
     artifacts:
-      - build/**/*.ipa
+      - build/ipa/*.ipa
