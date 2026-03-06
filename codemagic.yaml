@@ -9,12 +9,10 @@ workflows:
 
     scripts:
       - name: Install dependencies
-        script: |
-          npm install
+        script: npm install
 
       - name: Generate iOS project
-        script: |
-          npx expo prebuild --platform ios --non-interactive
+        script: npx expo prebuild --platform ios --non-interactive
 
       - name: Install CocoaPods
         script: |
@@ -36,27 +34,12 @@ workflows:
           archive \
           -archivePath build/App.xcarchive
 
-      - name: Export IPA
+      - name: Create unsigned IPA
         script: |
-          mkdir -p build/ipa
-
-          cat <<EOF > exportOptions.plist
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>development</string>
-          </dict>
-          </plist>
-          EOF
-
-          xcodebuild -exportArchive \
-          -archivePath build/App.xcarchive \
-          -exportPath build/ipa \
-          -exportOptionsPlist exportOptions.plist \
-          CODE_SIGNING_ALLOWED=NO \
-          CODE_SIGNING_REQUIRED=NO
+          mkdir -p build/Payload
+          cp -R build/App.xcarchive/Products/Applications/*.app build/Payload/
+          cd build
+          zip -r Italiano.ipa Payload
 
     artifacts:
-      - build/ipa/*.ipa
+      - build/*.ipa
